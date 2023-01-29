@@ -4,7 +4,7 @@ const methodOverride = require("method-override");
 const cors = require("cors");
 // const frontAuth = require("../api/middlewares/front/auth");
 // const adminRoutes = require("../api/routes/v1/admin/index");
-// const frontRoutes = require("../api/routes/v1/front/index");
+const frontRoutes = require("../api/routes/v1/front/index");
 const error = require("../api/middlewares/error");
 const path = require("path");
 const rateLimit = require("express-rate-limit");
@@ -51,8 +51,9 @@ app.use(compression());
 // app.use("/v1/admin", adminRoutes);
 
 // mount admin api v1 routes
-// app.use("/v1/front", frontRoutes);
+app.use("/v1/front", frontRoutes);
 
+ 
 // Admin Site Build Path
 app.use("/admin/", express.static(path.join(__dirname, "../../admin")));
 app.get("/admin/*", function (req, res) {
