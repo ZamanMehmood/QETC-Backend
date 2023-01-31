@@ -5,7 +5,7 @@ const { route } = require('./university.route');
 const universityRoutes = require('./university.route')
 const programmeRoutes = require('./programme.route');
 const leadRoutes = require('./lead.route')
-// const grantRoutes = require('./grants.route');
+const applicantsRoute = require('./applicants.route');
 
  
 const router = express.Router();
@@ -16,6 +16,7 @@ const router = express.Router();
 router.use('/university', universityRoutes);
 router.use('/programme',programmeRoutes)
 router.use('/lead', leadRoutes);
+router.use('/applicants',applicantsRoute)
  
 module.exports = router;
 

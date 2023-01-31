@@ -32,7 +32,10 @@ const storage = multer.diskStorage({
 })
 
 const upload = multer({ storage })
-exports.cpUpload = upload.fields([{ name: 'image', maxCount: 1 }, { name: 'screenShot', maxCount: 1 }, { name: 'icon', maxCount: 1 }, { name: 'files', maxCount: 1 }, { name: 'manifestFile', maxCount: 1 }, { name: 'crashLog', maxCount: 1 },])
+// exports.cpUpload = upload.fields([{ name: 'image', maxCount: 1 }, { name: 'screenShot', maxCount: 1 }, { name: 'icon', maxCount: 1 }, { name: 'files', maxCount: 1 }, { name: 'manifestFile', maxCount: 1 }, { name: 'crashLog', maxCount: 1 },])
+exports.cpUpload = upload.fields([{ name: 'image', maxCount: 1 }, { name: 'fileUpload', maxCount: 1 },])
+
+// exports.cpUpload = upload.fields([{ name: 'image', maxCount: 1 }, { name: 'fileUpload', maxCount: 1 }])
 exports.uploadSingle = upload.single('image')
 exports.uploadContentImage = upload.single('files')
 exports.profileUpload = upload.fields([{ name: 'profileImage', maxCount: 1 }, { name: 'bannerImage', maxCount: 1 }])
