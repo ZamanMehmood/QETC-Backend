@@ -6,6 +6,7 @@ const ApplicationDetails = db.ApplicationDetails;
  
  
 exports.createApplicant = async (req, res, next) => {
+console.log("applicantsid",Applicants)
 
   try {
     console.log("Req.body applicants =====>", req.body);
@@ -25,8 +26,11 @@ exports.createApplicant = async (req, res, next) => {
 
     //save the lead in db
     applicants = await Applicants.create(applicants);
+    // let applicantsId= applicants.dataValues.id;
+    console.log("applicantsid",applicants.dataValues.id );
 
 //  
+      
     let applicantDetails = {
       applicationLevel: req.body.applicationLevel,
       interestedProgramme: req.body.interestedProgramme,
@@ -45,8 +49,9 @@ exports.createApplicant = async (req, res, next) => {
       attestationLetter: req.body.attestationLetter,
       releaseLetter: req.body.releaseLetter,
       status: req.body.status,
-      ApplicantsId: applicants.dataValues.id,
-      //  UniversityId: university.dataValues.id
+      applicantsId: applicants.dataValues.id,
+      // ApplicantsId: applicants._previousDataValues.id,
+ 
     };
     applicantDetails = await ApplicationDetails.create(applicantDetails);
     return res.json({

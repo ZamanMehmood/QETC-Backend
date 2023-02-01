@@ -31,7 +31,8 @@ module.exports = (sequelize, DataTypes) => {
     otherDocuments: DataTypes.STRING,
     attestationLetter: DataTypes.STRING,
     releaseLetter: DataTypes.STRING,
-    status: DataTypes.STRING
+    status: DataTypes.STRING,
+    // applicantsId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'ApplicationDetails',

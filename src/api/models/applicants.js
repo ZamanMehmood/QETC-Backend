@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Applicants.hasOne(models.ApplicationDetails);
+      // University.hasMany(models.Campus);
     }
   }
   Applicants.init({
@@ -23,7 +24,8 @@ module.exports = (sequelize, DataTypes) => {
     country: DataTypes.STRING,
     image: DataTypes.STRING,
     passportNo: DataTypes.INTEGER,
-    fileUpload: DataTypes.STRING
+    fileUpload: DataTypes.STRING,
+    // applicantsId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Applicants',
