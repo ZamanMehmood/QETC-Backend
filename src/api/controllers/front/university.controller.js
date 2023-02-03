@@ -31,7 +31,7 @@ exports.createUniversity = async (req, res, next) => {
         name: ele.name,
         address1: ele.address1,
         address2: ele.address2,
-        phone: ele.phone,
+        phone: parseInt(ele.phone),
         email: ele.email,
         isMain: ele.isMain,
         UniversityId: university.dataValues.id,
