@@ -9,8 +9,7 @@ exports.createUniversity = async (req, res, next) => {
     console.log("req file", req.file);
     //create new record in db
     let university = {
-      logo: req.file.filename,
-      // image: req.file.filename,
+      image: req.file.filename,
       name: req.body.name,
       type: req.body.type,
       counserllerName: req.body.counserllerName,
@@ -22,7 +21,7 @@ exports.createUniversity = async (req, res, next) => {
       commisionDuration: req.body.commisionDuration,
     };
     university = await University.create(university);
-    console.log("universityId", university);
+    console.log("universityId",university.dataValues.id );
     console.log("campuss", req.body.campuses);
 
     const newArr = JSON.parse(req.body.campuses);

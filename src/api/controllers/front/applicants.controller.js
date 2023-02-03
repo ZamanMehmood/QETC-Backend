@@ -28,7 +28,6 @@ console.log("applicantsid",Applicants)
     applicants = await Applicants.create(applicants);
     // let applicantsId= applicants.dataValues.id;
     console.log("applicantsid",applicants.dataValues.id );
-
 //  
       
     let applicantDetails = {

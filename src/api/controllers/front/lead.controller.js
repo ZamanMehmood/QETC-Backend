@@ -5,6 +5,8 @@ const ProgrammeDetails = db.ProgrameDetails;
 exports.createLead = async (req, res, next) => {
   try {
     console.log("Req.body Lead =====>", req.body);
+    console.log("Req.body Lead =====>", req.file);
+
     //
 
     let lead = {
@@ -42,11 +44,11 @@ exports.createLead = async (req, res, next) => {
       msg: "lead created successfully",
     });
   } catch (err) {
-    res.status(500).send({
-      message:
-        err.message || "Some error occurred while creating the Tutorial.",
-    });
-    //   console.log("Error handling =>", err);
+    // res.status(500).send({
+    //   message:
+    //     err.message || "Some error occurred while creating the Tutorial.",
+    // });
+      console.log("Error handling =>", err);
     next();
   }
 };

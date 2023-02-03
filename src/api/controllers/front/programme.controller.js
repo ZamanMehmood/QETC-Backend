@@ -27,7 +27,6 @@ const Programme = db.Programme;
         entryRequirement: req.body.entryRequirement,
       };
 
-  
       //save the programme in db
       programme = await Programme.create(programme);
       return res.json({
@@ -36,11 +35,12 @@ const Programme = db.Programme;
         msg: "programme created successfully",
       });
     } catch (err) {
-        res.status(500).send({
-            message:
-              err.message || "Some error occurred while creating the Tutorial."
-          });
-    //   console.log("Error handling =>", err);
+        // res.status(500).send({
+        //     message:
+        //       err.message || "Some error occurred while creating the Tutorial."
+        //   });
+      // console.log("Error handling =>", err);
+      console.log("catch block")
       next();
     }
   };
