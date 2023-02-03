@@ -31,7 +31,7 @@ exports.createUniversity = async (req, res, next) => {
         name: ele.name,
         address1: ele.address1,
         address2: ele.address2,
-        phone: parseInt(ele.phone),
+        phone: ele.phone,
         email: ele.email,
         isMain: ele.isMain,
         UniversityId: university.dataValues.id,
@@ -42,7 +42,7 @@ exports.createUniversity = async (req, res, next) => {
     return res.send({
       success: true,
       data: university,
-      msg: "university created successfully",
+      message: "university created successfully",
     });
   } catch (err) {
     console.log("Error handling =>", err);
@@ -94,7 +94,7 @@ exports.listUniversity = async (req, res, next) => {
     // res.send(uni);
     return res.send({
       success: true,
-      message: "FAQs fetched successfully",
+      message: "Universities fetched successfully",
       data: {
         faqs,
         pagination: {

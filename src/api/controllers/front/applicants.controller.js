@@ -56,14 +56,14 @@ console.log("applicantsid",Applicants)
     return res.json({
       success: true,
       data: applicants,
-      msg: "applicants created successfully",
+      message: "Applicants created successfully",
     });
   } catch (err) {
-    res.status(500).send({
-      message:
-        err.message || "Some error occurred while creating the applicants.",
-    });
-    //   console.log("Error handling =>", err);
+    // res.status(500).send({
+    //   message:
+    //     err.message || "Some error occurred while creating the applicants.",
+    // });
+      console.log("Error handling =>", err);
     next();
   }
 };
@@ -97,11 +97,10 @@ exports.listApplicants = async (req, res, next) => {
       { $offest: limit * (page - 1) },
       { $LIMIT: limit }
     );
-    // console.log("faqs", faqs);
-    // res.send(uni);
+     
     return res.send({
       success: true,
-      message: "FAQs fetched successfully",
+      message: "Applicants fetched successfully",
       data: {
         faqs,
         pagination: {

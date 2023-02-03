@@ -41,7 +41,7 @@ exports.createLead = async (req, res, next) => {
     return res.json({
       success: true,
       data: lead,
-      msg: "lead created successfully",
+      message: "Lead created successfully",
     });
   } catch (err) {
     // res.status(500).send({
@@ -86,7 +86,7 @@ exports.listLead = async (req, res, next) => {
     // res.send(uni);
     return res.send({
       success: true,
-      message: "FAQs fetched successfully",
+      message: "Leads fetched successfully",
       data: {
         faqs,
         pagination: {

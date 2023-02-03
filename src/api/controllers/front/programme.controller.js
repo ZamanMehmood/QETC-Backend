@@ -32,15 +32,15 @@ const Programme = db.Programme;
       return res.json({
         success: true,
         data: programme,
-        msg: "programme created successfully",
+        message: "programme created successfully",
       });
     } catch (err) {
         // res.status(500).send({
         //     message:
         //       err.message || "Some error occurred while creating the Tutorial."
         //   });
-      // console.log("Error handling =>", err);
-      console.log("catch block")
+      console.log("Error handling =>", err);
+      // console.log("catch block")
       next();
     }
   };
@@ -93,7 +93,7 @@ exports.listProgrammes = async (req, res,next) => {
     // res.send(uni);
     return res.send({
       success: true,
-      message: "FAQs fetched successfully",
+      message: "Programms fetched successfully",
       data: {
         faqs,
         pagination: {
