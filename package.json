@@ -57,5 +57,8 @@
     "randomstring": "^1.2.1",
     "sequelize": "^6.28.0",
     "slugify": "^1.6.5"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.6.0"
   }
 }

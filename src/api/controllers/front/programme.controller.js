@@ -1,69 +1,48 @@
-// const Cms = require('../../models/cms.model');
-// const ProgrammeController = require("../../models/university");
-// const Programme = require("../../models/programme");
-
-
-
 const db = require("../../models");
 const Programme = db.Programme;
 
+// create programms
+exports.createProgramme = async (req, res, next) => {
+  try {
+    console.log("Req.body programme controller =====>", req.body);
+    //
 
+    let programme = {
+      name: req.body.name,
+      selectUniversity: req.body.selectUniversity,
+      programmeLevel: req.body.programmeLevel,
+      programmeIntake: req.body.programmeIntake,
+      programmeDuration: req.body.programmeDuration,
+      programmeCategory: req.body.programmeCategory,
+      tutionFee: req.body.tutionFee,
+      otherFee: req.body.otherFee,
+      engRequirement: req.body.engRequirement,
+      entryRequirement: req.body.entryRequirement,
+    };
 
-  exports.createProgramme = async (req, res, next) => {
-    try {
-      console.log("Req.body programme controller =====>", req.body);
-    //   
-    
-      let programme = {
-        name: req.body.name,
-        selectUniversity: req.body.selectUniversity,
-        programmeLevel: req.body.programmeLevel,
-        programmeIntake: req.body.programmeIntake,
-        programmeDuration: req.body.programmeDuration,
-        programmeCategory: req.body.programmeCategory,
-        tutionFee: req.body.tutionFee,
-        otherFee: req.body.otherFee,
-        engRequirement: req.body.engRequirement,
-        entryRequirement: req.body.entryRequirement,
-      };
+    //save the programme in db
+    programme = await Programme.create(programme);
+    return res.json({
+      success: true,
+      data: programme,
+      message: "programme created successfully",
+    });
+  } catch (err) {
+    // res.status(500).send({
+    //     message:
+    //       err.message || "Some error occurred while creating the Tutorial."
+    //   });
+    console.log("Error handling =>", err);
+    // console.log("catch block")
+    next();
+  }
+};
 
-      //save the programme in db
-      programme = await Programme.create(programme);
-      return res.json({
-        success: true,
-        data: programme,
-        message: "programme created successfully",
-      });
-    } catch (err) {
-        // res.status(500).send({
-        //     message:
-        //       err.message || "Some error occurred while creating the Tutorial."
-        //   });
-      console.log("Error handling =>", err);
-      // console.log("catch block")
-      next();
-    }
-  };
-
-
-
-
-// list programme
-// exports.listProgrammes = async (req, res,next) => {
-//   try {
-//     const uni = await Programme.findAll();
-//     console.log("ppp",uni[0].dataValues.name)
-//     res.json(uni);
-//   } catch (err) {
-//     res.send("programme Error " + err);
-//   }
-//   // next();
-// };
-
-exports.listProgrammes = async (req, res,next) => {
+// list programms
+exports.listProgrammes = async (req, res, next) => {
   try {
     const uni = await Programme.findAndCountAll();
-   
+
     let { page, limit, name } = req.query;
 
     console.log("unitt", uni.count);
@@ -75,14 +54,14 @@ exports.listProgrammes = async (req, res,next) => {
 
     if (name) {
       filter.name = { $LIKE: name, $options: "gi" };
-    };
+    }
 
     const total = uni.count;
 
     if (page > Math.ceil(total / limit) && total > 0)
       page = Math.ceil(total / limit);
 
-       console.log("filter",filter)
+    console.log("filter", filter);
     const faqs = await Programme.findAll(
       { $WHERE: filter },
       { "$ORDER BY": { createdAt: -1 } },
@@ -108,4 +87,83 @@ exports.listProgrammes = async (req, res,next) => {
     res.send("programme Error " + err);
   }
   // next();
+};
+
+// API to edit programme
+exports.edit = async (req, res, next) => {
+  try {
+    let payload = req.body;
+    const programme = await Programme.update(
+      // Values to update
+      payload,
+      {
+        // Clause
+        where: {
+          id: payload.id,
+        },
+      }
+    );
+
+    return res.send({
+      success: true,
+      message: "programme updated successfully",
+      programme,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// API to delete programme
+exports.delete = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (id) {
+      const programme = await Programme.destroy({ where: { id: id } });
+
+      if (programme)
+        return res.send({
+          success: true,
+          message: "programme Page deleted successfully",
+          id,
+        });
+      else
+        return res.status(400).send({
+          success: false,
+          message: "programme Page not found for given Id",
+        });
+    } else
+      return res
+        .status(400)
+        .send({ success: false, message: "programme Id is required" });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// API to get  by id a programme
+exports.get = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (id) {
+      const programme = await Programme.findByPk(id);
+
+      if (programme)
+        return res.json({
+          success: true,
+          message: "programme retrieved successfully",
+          programme,
+        });
+      else
+        return res.status(400).send({
+          success: false,
+          message: "programme not found for given Id",
+        });
+    } else
+      return res
+        .status(400)
+        .send({ success: false, message: "programme Id is required" });
+  } catch (error) {
+    return next(error);
+  }
 };

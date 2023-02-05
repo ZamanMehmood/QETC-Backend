@@ -2,6 +2,7 @@ const db = require("../../models");
 const Lead = db.Lead;
 const ProgrammeDetails = db.ProgrameDetails;
 
+// create lead
 exports.createLead = async (req, res, next) => {
   try {
     console.log("Req.body Lead =====>", req.body);
@@ -33,7 +34,7 @@ exports.createLead = async (req, res, next) => {
       status: req.body.status,
       cert: req.body.cert,
       comments: req.body.comments,
-
+      leadId: lead.dataValues.id,
       //  UniversityId: university.dataValues.id
     };
     programmeDetails = await ProgrammeDetails.create(programmeDetails);
@@ -44,16 +45,12 @@ exports.createLead = async (req, res, next) => {
       message: "Lead created successfully",
     });
   } catch (err) {
-    // res.status(500).send({
-    //   message:
-    //     err.message || "Some error occurred while creating the Tutorial.",
-    // });
-      console.log("Error handling =>", err);
+    console.log("Error handling =>", err);
     next();
   }
 };
 
-// list programme
+// list lead
 exports.listLead = async (req, res, next) => {
   try {
     const uni = await Lead.findAndCountAll();
@@ -62,20 +59,20 @@ exports.listLead = async (req, res, next) => {
     console.log("unitt", uni.count);
     console.log("req.queryy", req.query); //name
     const filter = {};
-          
+
     page = page !== undefined && page !== "" ? parseInt(page) : 1;
     limit = limit !== undefined && limit !== "" ? parseInt(limit) : 10;
 
     if (name) {
       filter.name = { $LIKE: name, $options: "gi" };
-    };
+    }
 
     const total = uni.count;
 
     if (page > Math.ceil(total / limit) && total > 0)
       page = Math.ceil(total / limit);
 
-      //  console.log("filter",filter)
+    //  console.log("filter",filter)
     const faqs = await Lead.findAll(
       { $WHERE: filter },
       { "$ORDER BY": { createdAt: -1 } },
@@ -99,5 +96,109 @@ exports.listLead = async (req, res, next) => {
     });
   } catch (err) {
     res.send("programme Error " + err);
+  }
+};
+
+//  edit lead 
+exports.edit = async (req, res, next) => {
+  try {
+    let payload = req.body;
+    const lead = await Lead.update(
+      // Values to update
+      payload,
+      {
+        // Clause
+        where: {
+          id: payload.id,
+        },
+      }
+    );
+
+    let programme = {
+      schoolName: req.body.schoolName,
+      qualificationType: req.body.qualificationType,
+      selectUniversity: req.body.selectUniversity,
+      interestedProgramme: req.body.interestedProgramme,
+      status: req.body.status,
+      cert: req.body.cert,
+      comments: req.body.comments,
+      leadId: payload.id,
+    };
+    console.log("programmassss=>", programme);
+    programme = ProgrammeDetails.update(programme, {
+      where: {
+        id: programme.leadId,
+      },
+    });
+
+    return res.send({
+      success: true,
+      message: "lead updated successfully",
+      lead,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// API to delete lead
+exports.delete = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (id) {
+      await ProgrammeDetails.destroy({
+        where: { leadId: id },
+      });
+      const lead = await Lead.destroy({ where: { id: id } });
+
+      if (lead)
+        return res.send({
+          success: true,
+          message: "lead Page deleted successfully",
+          id,
+        });
+      else
+        return res.status(400).send({
+          success: false,
+          message: "lead Page not found for given Id",
+        });
+    } else
+      return res
+        .status(400)
+        .send({ success: false, message: "lead Id is required" });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// API to get a lead
+exports.get = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (id) {
+      const lead = await Lead.findByPk(id);
+      lead.dataValues.programmeDetails = await ProgrammeDetails.findOne({
+        where: {
+          leadId: 1,
+        },
+      });
+
+      if (lead)
+        return res.json({
+          success: true,
+          message: "lead retrieved successfully",
+          lead,
+        });
+      else
+        return res.status(400).send({
+          success: false,
+          message: "lead not found for given Id",
+        });
+    } else
+      return res
+        .status(400)
+        .send({ success: false, message: "lead Id is required" });
+  } catch (error) {
+    return next(error);
   }
 };

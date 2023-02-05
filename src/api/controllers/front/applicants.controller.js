@@ -2,15 +2,13 @@ const db = require("../../models");
 const Applicants = db.Applicants;
 const ApplicationDetails = db.ApplicationDetails;
 
-// 
- 
- 
+// create applicants
 exports.createApplicant = async (req, res, next) => {
-console.log("applicantsid",Applicants)
+  console.log("applicantsid", Applicants);
 
   try {
     console.log("Req.body applicants =====>", req.body);
-  console.log("req.files",req.files)
+    console.log("req.files", req.files);
 
     let applicants = {
       fullName: req.body.fullName,
@@ -27,10 +25,141 @@ console.log("applicantsid",Applicants)
     //save the lead in db
     applicants = await Applicants.create(applicants);
     // let applicantsId= applicants.dataValues.id;
-    console.log("applicantsid",applicants.dataValues.id );
-//  
-      
+    console.log("applicantsid", applicants.dataValues.id);
+    //
+
     let applicantDetails = {
+      applicationLevel: req.body.applicationLevel,
+      interestedProgramme: req.body.interestedProgramme,
+      schoolName: req.body.schoolName,
+      qualificationType: req.body.qualificationType,
+      selectapplicant: req.body.selectUniversity,
+      completionLetter: req.body.completionLetter,
+      programmeLevel: req.body.programmeLevel,
+      healthForm: req.body.healthForm,
+      paymentReceipt: req.body.paymentReceipt,
+      researchProposal: req.body.researchProposal,
+      refreeForm: req.body.refreeForm,
+      medium: req.body.medium,
+      scholorshipForm: req.body.scholorshipForm,
+      otherDocuments: req.body.otherDocuments,
+      attestationLetter: req.body.attestationLetter,
+      releaseLetter: req.body.releaseLetter,
+      status: req.body.status,
+      ApplicantId: applicants.dataValues.id,
+    };
+    applicantDetails = await ApplicationDetails.create(applicantDetails);
+    return res.json({
+      success: true,
+      data: applicants,
+      message: "Applicants created successfully",
+    });
+  } catch (err) {
+    // res.status(500).send({
+    //   message:
+    //     err.message || "Some error occurred while creating the applicants.",
+    // });
+    console.log("Error handling =>", err);
+    next();
+  }
+};
+
+// list applicants
+exports.listApplicants = async (req, res, next) => {
+  try {
+    const uni = await Applicants.findAndCountAll();
+    let { page, limit, name } = req.query;
+
+    console.log("unitt", uni.count);
+    console.log("req.queryy", req.query); //name
+    const filter = {};
+
+    page = page !== undefined && page !== "" ? parseInt(page) : 1;
+    limit = limit !== undefined && limit !== "" ? parseInt(limit) : 10;
+
+    if (name) {
+      filter.name = { $LIKE: name, $options: "gi" };
+    }
+
+    const total = uni.count;
+
+    if (page > Math.ceil(total / limit) && total > 0)
+      page = Math.ceil(total / limit);
+
+    //  console.log("filter",filter)
+    const faqs = await Applicants.findAll(
+      { $WHERE: filter },
+      { "$ORDER BY": { createdAt: -1 } },
+      { $offest: limit * (page - 1) },
+      { $LIMIT: limit }
+    );
+
+    return res.send({
+      success: true,
+      message: "Applicants fetched successfully",
+      data: {
+        faqs,
+        pagination: {
+          page,
+          limit,
+          total,
+          pages: Math.ceil(total / limit) <= 0 ? 1 : Math.ceil(total / limit),
+        },
+      },
+    });
+  } catch (err) {
+    res.send("programme Error " + err);
+  }
+};
+
+// // API to get a applicants
+exports.get = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (id) {
+      const applicant = await Applicants.findByPk(id);
+      const applicationDetails = await ApplicationDetails.findAll({
+        where: { ApplicantId: applicant.id },
+      });
+
+      applicant.dataValues.ApplicationDetails = applicationDetails;
+
+      if (applicant)
+        return res.json({
+          success: true,
+          message: "applicant retrieved successfully",
+          applicant,
+        });
+      else
+        return res.status(400).send({
+          success: false,
+          message: "applicant not found for given Id",
+        });
+    } else
+      return res
+        .status(400)
+        .send({ success: false, message: "applicant Id is required" });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+//  api to edit applicant
+exports.edit = async (req, res, next) => {
+  try {
+    let payload = req.body;
+    const applicant = await Applicants.update(
+      // Values to update
+      payload,
+      {
+        // Clause
+        where: {
+          id: payload.id,
+        },
+      }
+    );
+
+    let applicants = {
       applicationLevel: req.body.applicationLevel,
       interestedProgramme: req.body.interestedProgramme,
       schoolName: req.body.schoolName,
@@ -48,70 +177,52 @@ console.log("applicantsid",Applicants)
       attestationLetter: req.body.attestationLetter,
       releaseLetter: req.body.releaseLetter,
       status: req.body.status,
-      applicantsId: applicants.dataValues.id,
-      // ApplicantsId: applicants._previousDataValues.id,
- 
+      ApplicantId: payload.id,
     };
-    applicantDetails = await ApplicationDetails.create(applicantDetails);
-    return res.json({
-      success: true,
-      data: applicants,
-      message: "Applicants created successfully",
+
+    console.log("programmassss=>", applicants);
+    applicants = ApplicationDetails.update(applicants, {
+      where: {
+        id: applicants.ApplicantId,
+      },
     });
-  } catch (err) {
-    // res.status(500).send({
-    //   message:
-    //     err.message || "Some error occurred while creating the applicants.",
-    // });
-      console.log("Error handling =>", err);
-    next();
+
+    return res.send({
+      success: true,
+      message: "lead updated successfully",
+      applicant,
+    });
+  } catch (error) {
+    return next(error);
   }
 };
 
-// list programme
-exports.listApplicants = async (req, res, next) => {
+// API to delete applicant
+exports.delete = async (req, res, next) => {
   try {
-    const uni = await Applicants.findAndCountAll();
-    let { page, limit, name } = req.query;
+    const { id } = req.params;
+    if (id) {
+      await ApplicationDetails.destroy({
+        where: { ApplicantId: id },
+      });
+      const applicant = await Applicants.destroy({ where: { id: id } });
 
-    console.log("unitt", uni.count);
-    console.log("req.queryy", req.query); //name
-    const filter = {};
-
-    page = page !== undefined && page !== "" ? parseInt(page) : 1;
-    limit = limit !== undefined && limit !== "" ? parseInt(limit) : 10;
-
-    if (name) {
-      filter.name = { $LIKE: name, $options: "gi" };
-    };
-
-    const total = uni.count;
-
-    if (page > Math.ceil(total / limit) && total > 0)
-      page = Math.ceil(total / limit);
-
-      //  console.log("filter",filter)
-    const faqs = await Applicants.findAll(
-      { $WHERE: filter },
-      { "$ORDER BY": { createdAt: -1 } },
-      { $offest: limit * (page - 1) },
-      { $LIMIT: limit }
-    );
-     
-    return res.send({
-      success: true,
-      message: "Applicants fetched successfully",
-      data: {
-        faqs,
-        pagination: {
-          page,
-          limit,
-          total,
-          pages: Math.ceil(total / limit) <= 0 ? 1 : Math.ceil(total / limit),
-        },
-      },
-    });
-  } catch (err) {
-    res.send("programme Error " + err);
+      if (applicant)
+        return res.send({
+          success: true,
+          message: "applicant Page deleted successfully",
+          id,
+        });
+      else
+        return res.status(400).send({
+          success: false,
+          message: "applicant Page not found for given Id",
+        });
+    } else
+      return res
+        .status(400)
+        .send({ success: false, message: "applicant Id is required" });
+  } catch (error) {
+    return next(error);
   }
 };

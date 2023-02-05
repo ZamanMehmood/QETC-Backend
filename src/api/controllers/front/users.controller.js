@@ -1,21 +1,20 @@
 const db = require("../../models");
 const Users = db.Users;
- 
 
 exports.createUser = async (req, res, next) => {
   try {
     console.log("Req.body users controller =====>", req.body);
 
     let users = {
-    name: req.body.name,
-    email: req.body.email,
-    number: req.body.number,
-    role: req.body.role,
-    branch: req.body.branch,
-    position: req.body.position,
-    date: req.body.date,
+      name: req.body.name,
+      email: req.body.email,
+      number: req.body.number,
+      role: req.body.role,
+      branch: req.body.branch,
+      position: req.body.position,
+      date: req.body.date,
     };
-    console.log(" inside if block")
+    console.log(" inside if block");
 
     //save the users in db
     users = await Users.create(users);
@@ -26,12 +25,11 @@ exports.createUser = async (req, res, next) => {
     });
   } catch (err) {
     console.log("Error handling =>", err);
-    console.log("inside catch block")
+    console.log("inside catch block");
     next();
   }
 };
 
- 
 exports.listUsers = async (req, res, next) => {
   try {
     const uni = await Users.findAndCountAll();

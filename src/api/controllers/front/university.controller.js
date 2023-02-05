@@ -21,7 +21,7 @@ exports.createUniversity = async (req, res, next) => {
       commisionDuration: req.body.commisionDuration,
     };
     university = await University.create(university);
-    console.log("universityId",university.dataValues.id );
+    console.log("universityId", university.dataValues.id);
     console.log("campuss", req.body.campuses);
 
     const newArr = JSON.parse(req.body.campuses);
@@ -50,17 +50,6 @@ exports.createUniversity = async (req, res, next) => {
   }
 };
 
-// list university
-// exports.listUniversity = async (req, res, next) => {
-//         // console.log("req.query",req.query)
-//   try {
-//     const uni = await University.findAll();
-//     res.send(uni);
-//   } catch (err) {
-//     res.send("University Error " + err);
-//   }
-// };
-
 exports.listUniversity = async (req, res, next) => {
   // console.log("req.query",req.query);
   try {
@@ -76,14 +65,14 @@ exports.listUniversity = async (req, res, next) => {
 
     if (name) {
       filter.name = { $LIKE: name, $options: "gi" };
-    };
+    }
 
     const total = uni.count;
 
     if (page > Math.ceil(total / limit) && total > 0)
       page = Math.ceil(total / limit);
 
-       console.log("filter",filter)
+    console.log("filter", filter);
     const faqs = await University.findAll(
       { $WHERE: filter },
       { "$ORDER BY": { createdAt: -1 } },
@@ -110,104 +99,114 @@ exports.listUniversity = async (req, res, next) => {
   }
 };
 
-// exports.listUniversity = async (req, res, next) => {
-//   console.log("req.query", req.query);
-//   // console.log("Universityy", University)
+// API to edit University
+exports.edit = async (req, res, next) => {
+  try {
+    let payload = req.body;
+    const university = await University.update(
+      // Values to update
+      payload,
+      {
+        // Clause
+        where: {
+          id: payload.id,
+        },
+      }
+    );
 
-//   try {
-//     let { page, limit } = req.query; //name
-//     const filter = {};
+    const newArr = JSON.parse(req.body.campuses);
+    console.log(payload, newArr);
+    const mappedArr = newArr.map(async (ele, ind) => {
+      let campus = {
+        name: ele.name,
+        address1: ele.address1,
+        address2: ele.address2,
+        phone: ele.phone,
+        email: ele.email,
+        isMain: ele.isMain,
+        UniversityId: payload.id,
+      };
+      console.log("campssssssssa", campus);
+      campus = await Campus.update(
+        // Values to update
+        campus,
+        {
+          // Clause
+          where: {
+            id: ele.id,
+          },
+        }
+      );
+    });
 
-//     page = page !== undefined && page !== "" ? parseInt(page) : 1;
-//     limit = limit !== undefined && limit !== "" ? parseInt(limit) : 10;
+    return res.send({
+      success: true,
+      message: "university University updated successfully",
+      university,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
 
-//     if (name) {
-//       filter.name = { $Like: "b%" };
-//     }
+// API to delete university
+exports.delete = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (id) {
+      const university = await University.destroy({ where: { id: id } });
+      const campuses = await Campus.destroy({
+        where: { UniversityId: id },
+      });
 
-//     const total = await ("SELECT COUNT(*) FROM Universities", filter);
-//     // const total =50
+      if (university)
+        return res.send({
+          success: true,
+          message: "university Page deleted successfully",
+          id,
+        });
+      else
+        return res.status(400).send({
+          success: false,
+          message: "university Page not found for given Id",
+        });
+    } else
+      return res
+        .status(400)
+        .send({ success: false, message: "university Id is required" });
+  } catch (error) {
+    return next(error);
+  }
+};
 
-//     if (page > Math.ceil(total / limit) && total > 0)
-//       page = Math.ceil(total / limit);
+// API to get a University
+exports.get = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (id) {
+      const university = await University.findByPk(id);
+      const campuses = await Campus.findAll({
+        where: { UniversityId: university.id },
+      });
 
-//     const faqs = await University.findAll(
-//       { $WHERE: filter },
-//       { "$ORDER BY": { createdAt: -1 } },
-//       { $offest: limit * (page - 1) },
-//       { $LIMIT: limit }
-//     );
-//     console.log("faqsss", faqs);
+      university.dataValues.campuses = campuses;
 
-//     // const uni = await University.findAll();
-//     // res.json(uni);
-//     return res.json({
-//       success: true,
-//       message: "FAQs fetched successfully",
-//       data: {
-//         faqs,
-//         pagination: {
-//           page,
-//           limit,
-//           total,
-//           pages: Math.ceil(total / limit) <= 0 ? 1 : Math.ceil(total / limit),
-//         },
-//       },
-//     });
-//     // }
-//   } catch (err) {
-//     res.send("University Error " + err);
-//   }
-// };
-
-// exports.list = async (req, res, next) => {
-//   try {
-//       let { page, limit, title, status } = req.query        //name
-//       const filter = {}
-
-//       page = page !== undefined && page !== '' ? parseInt(page) : 1
-//       limit = limit !== undefined && limit !== '' ? parseInt(limit) : 10
-
-//       if (title) {
-//           filter.title = { $regex: title, $options: "gi" }
-//       }
-//       if (status) {
-//           if(status === 'true'){
-//               filter.status = true
-//           }
-//           else if(status === 'false'){
-//               filter.status = false
-//           }
-//       }
-
-//       const total = await FAQ.countDocuments(filter)
-
-//       if (page > Math.ceil(total / limit) && total > 0)
-//           page = Math.ceil(total / limit)
-
-//       const faqs = await FAQ.aggregate([
-//           { $match: filter },
-//           { $sort: { createdAt: -1 } },
-//           { $skip: limit * (page - 1) },
-//           { $limit: limit },
-//           {
-//               $project: {
-//                   _id: 1, title: 1, status: 1, desc: 1
-//               }
-//           }
-//       ])
-
-//       return res.send({
-//           success: true, message: 'FAQs fetched successfully',
-//           data: {
-//               faqs,
-//               pagination: {
-//                   page, limit, total,
-//                   pages: Math.ceil(total / limit) <= 0 ? 1 : Math.ceil(total / limit)
-//               }
-//           }
-//       })
-//   } catch (error) {
-//       return next(error)
-//   }
-// }
+      if (university)
+        return res.json({
+          success: true,
+          message: "university retrieved successfully",
+          university,
+        });
+      else
+        return res.status(400).send({
+          success: false,
+          message: "University not found for given Id",
+        });
+    } else
+      return res
+        .status(400)
+        .send({ success: false, message: "University Id is required" });
+  } catch (error) {
+    return next(error);
+  }
+};
