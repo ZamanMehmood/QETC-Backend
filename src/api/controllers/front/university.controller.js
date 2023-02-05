@@ -103,6 +103,11 @@ exports.listUniversity = async (req, res, next) => {
 exports.edit = async (req, res, next) => {
   try {
     let payload = req.body;
+    if (req.file) {
+      const image = req.file;
+      payload[`logo`] = image.filename;
+    }
+    console.log("payload", req.file, req.files);
     const university = await University.update(
       // Values to update
       payload,
