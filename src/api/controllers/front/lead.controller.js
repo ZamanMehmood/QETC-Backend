@@ -42,6 +42,7 @@ exports.createLead = async (req, res, next) => {
     return res.json({
       success: true,
       data: lead,
+      // programmeDetails,
       message: "Lead created successfully",
     });
   } catch (err) {
@@ -54,6 +55,7 @@ exports.createLead = async (req, res, next) => {
 exports.listLead = async (req, res, next) => {
   try {
     const uni = await Lead.findAndCountAll();
+    // const programeTable = await ProgrammeDetails.findAll();
     let { page, limit, name } = req.query;
 
     console.log("unitt", uni.count);
@@ -74,7 +76,15 @@ exports.listLead = async (req, res, next) => {
 
     //  console.log("filter",filter)
     const faqs = await Lead.findAll(
-      { $WHERE: filter },
+      {
+        $WHERE: filter,
+        include: [
+          {
+            model: ProgrammeDetails,
+            as: "ProgrameDetail",
+          },
+        ],
+      },
       { "$ORDER BY": { createdAt: -1 } },
       { $offest: limit * (page - 1) },
       { $LIMIT: limit }
@@ -86,6 +96,7 @@ exports.listLead = async (req, res, next) => {
       message: "Leads fetched successfully",
       data: {
         faqs,
+        // programeTable,
         pagination: {
           page,
           limit,
@@ -99,10 +110,66 @@ exports.listLead = async (req, res, next) => {
   }
 };
 
-//  edit lead 
+// exports.listLead = async (req, res, next) => {
+//   // console.log("req.query",req.query);
+//   console.log("hhhhhhhhiiiiiiiiiiiiiiiiiiiiiiiii saqib");
+//   try {
+//     const uni = await Lead.findAndCountAll();
+//     let { page, limit, name } = req.query;
+
+//     console.log("unitt", uni.count);
+//     console.log("req.queryy", req.query); //name
+//     const filter = {};
+
+//     page = page !== undefined && page !== "" ? parseInt(page) : 1;
+//     limit = limit !== undefined && limit !== "" ? parseInt(limit) : 10;
+
+//     if (name) {
+//       filter.name = {
+//         [Op.like]: "%" + name + "%",
+//       };
+//     }
+
+//     const total = uni.count;
+
+//     if (page > Math.ceil(total / limit) && total > 0)
+//       page = Math.ceil(total / limit);
+
+//     console.log("filter", filter, page, limit);
+//     const faqs = await Lead.findAll({
+//       where: filter,
+
+//       order: [["updatedAt", "DESC"]],
+//       offest: limit * (page - 1),
+//       limit: limit,
+//     });
+
+//     return res.send({
+//       success: true,
+//       message: "Universities fetched successfully",
+//       data: {
+//         faqs,
+//         pagination: {
+//           page,
+//           limit,
+//           total,
+//           pages: Math.ceil(total / limit) <= 0 ? 1 : Math.ceil(total / limit),
+//         },
+//       },
+//     });
+//   } catch (err) {
+//     res.send("University Error " + err);
+//   }
+// };
+
+//  edit lead
 exports.edit = async (req, res, next) => {
   try {
     let payload = req.body;
+    if (req.file) {
+      const image = req.file;
+      payload[`logo`] = image.filename;
+    }
     const lead = await Lead.update(
       // Values to update
       payload,
@@ -135,6 +202,7 @@ exports.edit = async (req, res, next) => {
       success: true,
       message: "lead updated successfully",
       lead,
+      // programme,
     });
   } catch (error) {
     return next(error);
@@ -177,10 +245,18 @@ exports.get = async (req, res, next) => {
     const { id } = req.params;
     if (id) {
       const lead = await Lead.findByPk(id);
+      console.log("lead id ==>", lead.dataValues.id);
+      // const programeTable = await ProgrammeDetails.findByPk(id);
       lead.dataValues.programmeDetails = await ProgrammeDetails.findOne({
         where: {
-          leadId: 1,
+          leadId: lead.dataValues.id,
         },
+        // include: [
+        //   {
+        //     model: ProgrammeDetails,
+        //     as: "ProgrameDetail",
+        //   },
+        // ],
       });
 
       if (lead)
@@ -188,6 +264,7 @@ exports.get = async (req, res, next) => {
           success: true,
           message: "lead retrieved successfully",
           lead,
+          // programeTable,
         });
       else
         return res.status(400).send({

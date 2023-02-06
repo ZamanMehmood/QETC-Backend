@@ -50,8 +50,60 @@ exports.createUniversity = async (req, res, next) => {
   }
 };
 
+// exports.listUniversity = async (req, res, next) => {
+//   // console.log("req.query",req.query);
+//   try {
+//     const uni = await University.findAndCountAll();
+//     const campusse = Campus.findAll();
+//     let { page, limit, name } = req.query;
+
+//     console.log("unitt", uni.count);
+//     console.log("req.queryy", req.query); //name
+//     const filter = {};
+
+//     page = page !== undefined && page !== "" ? parseInt(page) : 1;
+//     limit = limit !== undefined && limit !== "" ? parseInt(limit) : 10;
+
+//     if (name) {
+//       filter.name = { $LIKE: name, $options: "gi" };
+//     }
+
+//     const total = uni.count;
+
+//     if (page > Math.ceil(total / limit) && total > 0)
+//       page = Math.ceil(total / limit);
+
+//     console.log("filter", filter);
+//     const faqs = await University.findAll(
+//       { $WHERE: filter },
+//       { "$ORDER BY": { createdAt: -1 } },
+//       { $offest: limit * (page - 1) },
+//       { $LIMIT: limit }
+//     );
+//     console.log("faqs", faqs);
+//     // res.send(uni);
+//     return res.send({
+//       success: true,
+//       message: "Universities fetched successfully",
+//       data: {
+//         faqs,
+//         campusse,
+//         pagination: {
+//           page,
+//           limit,
+//           total,
+//           pages: Math.ceil(total / limit) <= 0 ? 1 : Math.ceil(total / limit),
+//         },
+//       },
+//     });
+//   } catch (err) {
+//     res.send("University Error " + err);
+//   }
+// };
+
 exports.listUniversity = async (req, res, next) => {
   // console.log("req.query",req.query);
+  console.log("hhhhhhhhiiiiiiiiiiiiiiiiiiiiiiiii saqib");
   try {
     const uni = await University.findAndCountAll();
     let { page, limit, name } = req.query;
@@ -64,7 +116,9 @@ exports.listUniversity = async (req, res, next) => {
     limit = limit !== undefined && limit !== "" ? parseInt(limit) : 10;
 
     if (name) {
-      filter.name = { $LIKE: name, $options: "gi" };
+      filter.name = {
+        [Op.like]: "%" + name + "%",
+      };
     }
 
     const total = uni.count;
@@ -72,15 +126,22 @@ exports.listUniversity = async (req, res, next) => {
     if (page > Math.ceil(total / limit) && total > 0)
       page = Math.ceil(total / limit);
 
-    console.log("filter", filter);
+    console.log("filter", filter, page, limit);
     const faqs = await University.findAll(
-      { $WHERE: filter },
-      { "$ORDER BY": { createdAt: -1 } },
-      { $offest: limit * (page - 1) },
-      { $LIMIT: limit }
+      {
+        where: filter,
+        include: [
+          {
+            model: Campus,
+            as: "Campuses",
+          },
+        ],
+      },
+      { order: [["updatedAt", "DESC"]] },
+      { offest: limit * (page - 1) },
+      { limit: limit }
     );
-    console.log("faqs", faqs);
-    // res.send(uni);
+
     return res.send({
       success: true,
       message: "Universities fetched successfully",
