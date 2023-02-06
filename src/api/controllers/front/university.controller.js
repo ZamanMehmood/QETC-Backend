@@ -1,7 +1,8 @@
 const db = require("../../models");
 const University = db.University;
 const Campus = db.Campus;
-
+var Sequelize = require("sequelize");
+const Op = Sequelize.Op;
 // create university
 exports.createUniversity = async (req, res, next) => {
   try {
@@ -52,6 +53,7 @@ exports.createUniversity = async (req, res, next) => {
 
 exports.listUniversity = async (req, res, next) => {
   // console.log("req.query",req.query);
+  console.log("hhhhhhhhiiiiiiiiiiiiiiiiiiiiiiiii saqib");
   try {
     const uni = await University.findAndCountAll();
     let { page, limit, name } = req.query;
@@ -64,7 +66,9 @@ exports.listUniversity = async (req, res, next) => {
     limit = limit !== undefined && limit !== "" ? parseInt(limit) : 10;
 
     if (name) {
-      filter.name = { $LIKE: name, $options: "gi" };
+      filter.name = {
+        [Op.like]: "%" + name + "%",
+      };
     }
 
     const total = uni.count;
@@ -72,15 +76,13 @@ exports.listUniversity = async (req, res, next) => {
     if (page > Math.ceil(total / limit) && total > 0)
       page = Math.ceil(total / limit);
 
-    console.log("filter", filter);
-    const faqs = await University.findAll(
-      { $WHERE: filter },
-      { "$ORDER BY": { createdAt: -1 } },
-      { $offest: limit * (page - 1) },
-      { $LIMIT: limit }
-    );
-    console.log("faqs", faqs);
-    // res.send(uni);
+     const faqs = await University.findAll({
+      where: filter,
+      order: [["updatedAt", "DESC"]],
+      offest: limit * (page - 1),
+      limit: limit,
+    });
+
     return res.send({
       success: true,
       message: "Universities fetched successfully",
