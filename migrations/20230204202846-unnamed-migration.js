@@ -12,6 +12,16 @@ module.exports = {
       onUpdate: "CASCADE",
       onDelete: "SET NULL",
     });
+
+   await queryInterface.addColumn('ApplicationDetails', 'ApplicantId', {
+      type: Sequelize.INTEGER,
+      references: {
+        model: 'Applicants',
+        key: 'id',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
+    });
   },
 
   async down(queryInterface, Sequelize) {
@@ -22,5 +32,7 @@ module.exports = {
      * await queryInterface.dropTable('users');
      */
      await queryInterface.removeColumn("ProgrameDetails", "leadId");
+     await queryInterface.removeColumn('ApplicationDetails', 'ApplicantId');
+
   },
 };

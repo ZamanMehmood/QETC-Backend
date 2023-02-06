@@ -62,12 +62,12 @@ exports.listProgrammes = async (req, res, next) => {
       page = Math.ceil(total / limit);
 
     console.log("filter", filter);
-    const faqs = await Programme.findAll(
-      { $WHERE: filter },
-      { "$ORDER BY": { createdAt: -1 } },
-      { $offest: limit * (page - 1) },
-      { $LIMIT: limit }
-    );
+    const faqs = await Programme.findAll({
+      order: [["updatedAt", "DESC"]],
+      offset: limit * (page - 1),
+      limit: limit,
+      where: filter,
+    });
     console.log("faqs", faqs);
     // res.send(uni);
     return res.send({
