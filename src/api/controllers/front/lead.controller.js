@@ -75,20 +75,18 @@ exports.listLead = async (req, res, next) => {
       page = Math.ceil(total / limit);
 
     //  console.log("filter",filter)
-    const faqs = await Lead.findAll(
-      {
-        order: [["updatedAt", "DESC"]],
-        offset: limit * (page - 1),
-        limit: limit,
-        where: filter,
-        include: [
-          {
-            model: ProgrammeDetails,
-            as: "ProgrameDetail",
-          },
-        ],
-      }
-    );
+    const faqs = await Lead.findAll({
+      order: [["updatedAt", "DESC"]],
+      offset: limit * (page - 1),
+      limit: limit,
+      where: filter,
+      include: [
+        {
+          model: ProgrammeDetails,
+          as: "ProgrameDetail",
+        },
+      ],
+    });
     // console.log("faqs", faqs);
     // res.send(uni);
     return res.send({

@@ -22,7 +22,7 @@ const { uploadSingle, cpUpload } = require("../../../utils/upload");
 // var upload = multer({ storage: storage })
 
 // router.post("/create");
-router.route("/create").post(uploadSingle, controller.createUniversity);
+router.route("/create").post(uploadSingle, controller.create);
 router.route("/listUniversity").get(controller.listUniversity);
 router.route("/edit").put(uploadSingle, controller.edit);
 router.route("/delete/:id").delete(controller.delete);

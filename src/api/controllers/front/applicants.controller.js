@@ -54,7 +54,7 @@ exports.createApplicant = async (req, res, next) => {
       data: applicants,
       applicantDetails,
       // programmeDetails,
-      message: "Lead created successfully",
+      message: "applicant created successfully",
     });
   } catch (err) {
     // res.status(500).send({
@@ -142,20 +142,18 @@ exports.listApplicants = async (req, res, next) => {
       page = Math.ceil(total / limit);
 
     console.log("filter", filter, page, limit);
-    const faqs = await Applicants.findAll(
-      {
-        order: [["updatedAt", "DESC"]],
-        offset: limit * (page - 1),
-        limit: limit,
-        where: filter,
-        include: [
-          {
-            model: ApplicationDetails,
-            as: "ApplicationDetail",
-          },
-        ],
-      }
-    );
+    const faqs = await Applicants.findAll({
+      order: [["updatedAt", "DESC"]],
+      offset: limit * (page - 1),
+      limit: limit,
+      where: filter,
+      include: [
+        {
+          model: ApplicationDetails,
+          as: "ApplicationDetail",
+        },
+      ],
+    });
 
     return res.send({
       success: true,
