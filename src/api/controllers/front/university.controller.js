@@ -4,7 +4,7 @@ const Campus = db.Campus;
 var Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 // create university
-exports.createUniversity = async (req, res, next) => {
+exports.create = async (req, res, next) => {
   try {
     console.log("REq.body", req.body);
     console.log("req file", req.file);
@@ -124,21 +124,18 @@ exports.listUniversity = async (req, res, next) => {
     if (page > Math.ceil(total / limit) && total > 0)
       page = Math.ceil(total / limit);
 
-     const faqs = await University.findAll(
-      {
-        order: [["updatedAt", "DESC"]],
-        offset: limit * (page - 1),
-        limit: limit,
-        where: filter,
-        include: [
-          {
-            model: Campus,
-            as: "Campuses",
-          },
-        ],
-       
-      }
-    );
+    const faqs = await University.findAll({
+      order: [["updatedAt", "DESC"]],
+      offset: limit * (page - 1),
+      limit: limit,
+      where: filter,
+      include: [
+        {
+          model: Campus,
+          as: "Campuses",
+        },
+      ],
+    });
 
     return res.send({
       success: true,
@@ -166,7 +163,7 @@ exports.edit = async (req, res, next) => {
       const image = req.file;
       payload[`logo`] = image.filename;
     }
-    console.log("payload", req.file, req.files);
+    console.log("payload", req.file, req.file);
     const university = await University.update(
       // Values to update
       payload,
@@ -205,7 +202,7 @@ exports.edit = async (req, res, next) => {
 
     return res.send({
       success: true,
-      message: "university University updated successfully",
+      message: "University updated successfully",
       university,
     });
   } catch (error) {
