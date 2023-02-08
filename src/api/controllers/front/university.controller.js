@@ -1,8 +1,11 @@
 const db = require("../../models");
 const University = db.University;
 const Campus = db.Campus;
+const Activity = db.Activity;
 var Sequelize = require("sequelize");
 const Op = Sequelize.Op;
+
+
 // create university
 exports.create = async (req, res, next) => {
   try {
@@ -26,7 +29,6 @@ exports.create = async (req, res, next) => {
     console.log("campuss", req.body.campuses);
 
     const newArr = JSON.parse(req.body.campuses);
-    console.log("newArrr", newArr.length);
     const mappedArr = newArr.map(async (ele, ind) => {
       let campus = {
         name: ele.name,
@@ -39,7 +41,8 @@ exports.create = async (req, res, next) => {
       };
       campus = await Campus.create(campus);
     });
-    console.log("mapped arrrr ==>", mappedArr);
+
+   await Activity.create({action:'New University Created',userId:1})
     return res.send({
       success: true,
       data: university,

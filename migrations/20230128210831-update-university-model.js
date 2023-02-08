@@ -3,10 +3,10 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.addColumn("Universities", "utype", {
-      type: Sequelize.INTEGER,
-      allowNull: true,
-    });
+    // await queryInterface.addColumn("Universities", "utype", {
+    //   type: Sequelize.INTEGER,
+    //   allowNull: true,
+    // });
     // await queryInterface.addColumn("Universities", "counserllerName", {
     //   type: Sequelize.INTEGER,
     //   allowNull: true,
@@ -39,7 +39,7 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.removeColumn("Universities", "utype");
+    // await queryInterface.removeColumn("Universities", "utype");
     // await queryInterface.removeColumn("Universities", "counserllerName");
     // await queryInterface.removeColumn("Universities", "phone");
     // await queryInterface.removeColumn("Universities", "email");
