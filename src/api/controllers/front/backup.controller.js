@@ -8,45 +8,75 @@ const mysqldump = require("mysqldump");
 const env = process.env.NODE_ENV || "development";
 const config = require(__dirname + "../../../../../config/config.json")[env];
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
+const child_process = require('child_process');
 
-const getBackupFiles = async () => {
-  const backupDirectory = './backups/';
-  const files = await fs.promises.readdir(backupDirectory);
-  const backups = files.filter((file) => path.extname(file) === '.sql');
-  console.log(backups);
-  return backups
-
-  // const stats = await fs.promises.stat(filePath);
-  //   console.log(`Size of ${filePath}: ${stats.size} bytes`);
+const getFileName = async () => {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+  const timestamp = date.getTime();
+  const fileName = year + "_" + month + "_" + day + "_file_" + timestamp;
+  console.log("Unique file name: " + fileName);
+  return fileName;
 };
 
+const getTimeFromFileName = async (fileName) => {
+  const [dateString, timestampString] = fileName.split("_file_");
+  const [year, month, day] = dateString.split("_").map(Number);
+  const timestamp = Number(timestampString.split(".")[0]);
+  const date = new Date(timestamp);
+  return date.toString();
+};
+
+const getBackupFiles = async () => {
+  const backupDirectory = "./backups/";
+  const files = await fs.promises.readdir(backupDirectory);
+  const backups = files.map(async (file) => {
+    if (path.extname(file) === ".sql") {
+      let time = await getTimeFromFileName(file);
+      console.log("time", file, time);
+      return { time, file };
+    }
+  });
+  console.log("backups", backups);
+  return await Promise.all(backups);
+};
 
 // create university
 exports.create = async (req, res, next) => {
-  console.log("Creaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaate")
+  console.log("Creaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaate");
   try {
     const options = {
       host: config.host,
       user: config.username,
       password: config.password,
       database: config.database,
-      database: 'Qetc',
+      database: "Qetc",
       // dest: __dirname + "../../../../../config"
     };
 
     var d = new Date();
-var filename = 'monthly-' + d.getDate() + '-' + d.getMonth() + '-' + d.getFullYear();
-    console.log("options",options)
-     mysqldump({
+    var filename =
+      +d.getDate() +
+      "-" +
+      d.getDate() +
+      "-" +
+      d.getMonth() +
+      "-" +
+      d.getFullYear();
+    console.log("options", options);
+    let fileName = await getFileName();
+    mysqldump({
       connection: {
-        host: 'localhost',
-        user: 'root',
-        password: 'password',
-        database: 'Qetc',
-    },
-    dumpToFile: `./backups/${filename}.sql`,
+        host: "localhost",
+        user: "root",
+        password: "password",
+        database: "Qetc",
+      },
+      dumpToFile: `./backups/${fileName}.sql`,
     });
 
     // console.log("options",result)
@@ -64,185 +94,40 @@ var filename = 'monthly-' + d.getDate() + '-' + d.getMonth() + '-' + d.getFullYe
 exports.list = async (req, res, next) => {
   // console.log("req.query",req.query);
   try {
-    const backups=await getBackupFiles()
-     
+    const backups = await getBackupFiles();
+
     return res.send({
       success: true,
       backups,
-      message: "Universities fetched successfully",
-      
+      message: "Backups fetched successfully",
     });
   } catch (err) {
-    res.send("University Error " + err);
+    res.send("Backups Error " + err);
   }
 };
 
-// exports.listUniversity = async (req, res, next) => {
-//   // console.log("req.query",req.query);
-//   try {
-//     const uni = await University.findAndCountAll();
-//     let { page, limit, name } = req.query;
+exports.restore = async (req, res, next) => {
+  const restoreCommand = `mysql -u ${config.username} -p ${config.password} ${config.database} < ./backups/${req.params.fileName}.sql`;
+  child_process.exec(restoreCommand, (err, stdout, stderr) => {
+    if (err) {
+      console.log(err)
+      return res.status(500).json({ error: 'Failed to restore database',success:true });
+    }
+    return res.status(200).json({ message: 'Database restored successfully',success:false });
+  });
+}
 
-//     const filter = {};
 
-//     page = page !== undefined && page !== "" ? parseInt(page) : 1;
-//     limit = limit !== undefined && limit !== "" ? parseInt(limit) : 10;
-
-//     if (name) {
-//       filter.name = {
-//         [Op.like]: "%" + name + "%",
-//       };
-//     }
-
-//     const total = uni.count;
-
-//     if (page > Math.ceil(total / limit) && total > 0)
-//       page = Math.ceil(total / limit);
-
-//     const faqs = await University.findAll({
-//       order: [["updatedAt", "DESC"]],
-//       offset: limit * (page - 1),
-//       limit: limit,
-//       where: filter,
-//       include: [
-//         {
-//           model: Campus,
-//           as: "Campuses",
-//         },
-//       ],
-//     });
-
-//     return res.send({
-//       success: true,
-//       message: "Universities fetched successfully",
-//       data: {
-//         faqs,
-//         pagination: {
-//           page,
-//           limit,
-//           total,
-//           pages: Math.ceil(total / limit) <= 0 ? 1 : Math.ceil(total / limit),
-//         },
-//       },
-//     });
-//   } catch (err) {
-//     res.send("University Error " + err);
-//   }
-// };
-
-// // API to edit University
-// exports.edit = async (req, res, next) => {
-//   try {
-//     let payload = req.body;
-//     if (req.file) {
-//       const image = req.file;
-//       payload[`logo`] = image.filename;
-//     }
-//     console.log("payload", req.file, req.file);
-//     const university = await University.update(
-//       // Values to update
-//       payload,
-//       {
-//         // Clause
-//         where: {
-//           id: payload.id,
-//         },
-//       }
-//     );
-
-//     const newArr = JSON.parse(req.body.campuses);
-//     console.log(payload, newArr);
-//     const mappedArr = newArr.map(async (ele, ind) => {
-//       let campus = {
-//         name: ele.name,
-//         address1: ele.address1,
-//         address2: ele.address2,
-//         phone: ele.phone,
-//         email: ele.email,
-//         isMain: ele.isMain,
-//         UniversityId: payload.id,
-//       };
-//       console.log("campssssssssa", campus);
-//       campus = await Campus.update(
-//         // Values to update
-//         campus,
-//         {
-//           // Clause
-//           where: {
-//             id: ele.id,
-//           },
-//         }
-//       );
-//     });
-
-//     return res.send({
-//       success: true,
-//       message: "University updated successfully",
-//       university,
-//     });
-//   } catch (error) {
-//     return next(error);
-//   }
-// };
-
-// // API to delete university
-// exports.delete = async (req, res, next) => {
-//   try {
-//     const { id } = req.params;
-//     if (id) {
-//       const university = await University.destroy({ where: { id: id } });
-//       const campuses = await Campus.destroy({
-//         where: { UniversityId: id },
-//       });
-
-//       if (university)
-//         return res.send({
-//           success: true,
-//           message: "university Page deleted successfully",
-//           id,
-//         });
-//       else
-//         return res.status(400).send({
-//           success: false,
-//           message: "university Page not found for given Id",
-//         });
-//     } else
-//       return res
-//         .status(400)
-//         .send({ success: false, message: "university Id is required" });
-//   } catch (error) {
-//     return next(error);
-//   }
-// };
-
-// // API to get a University
-// exports.get = async (req, res, next) => {
-//   try {
-//     const { id } = req.params;
-//     if (id) {
-//       const university = await University.findByPk(id);
-//       const campuses = await Campus.findAll({
-//         where: { UniversityId: university.id },
-//       });
-
-//       university.dataValues.campuses = campuses;
-
-//       if (university)
-//         return res.json({
-//           success: true,
-//           message: "university retrieved successfully",
-//           university,
-//         });
-//       else
-//         return res.status(400).send({
-//           success: false,
-//           message: "University not found for given Id",
-//         });
-//     } else
-//       return res
-//         .status(400)
-//         .send({ success: false, message: "University Id is required" });
-//   } catch (error) {
-//     return next(error);
-//   }
-// };
+exports.delete = async (req, res, next) => {
+  try {
+    const filePath = `./backups/${req.params.fileName}.sql`;
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        return res.status(500).json({ error: 'Failed to delete file' });
+      }
+      return res.status(200).json({ message: 'File deleted successfully' });
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
