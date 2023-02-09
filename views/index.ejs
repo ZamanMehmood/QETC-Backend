@@ -100,8 +100,7 @@
             
           if(isValid){
                 document.getElementById("createPrivateAdminForm").reset();
-                // axios.post('https://deskillz.arhamsoft.org/v1/admin/staff/private-admin/create-private-admin', {
-                axios.post('http://localhost:8081/v1/admin/staff/private-admin/create-private-admin', {
+                 axios.post('http://localhost:8081/v1/admin/staff/private-admin/create-private-admin', {
                     name,
                     email: email, 
                     password,
