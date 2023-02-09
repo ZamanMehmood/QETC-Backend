@@ -24,8 +24,6 @@ exports.list = async (req, res, next) => {
 
     let { page, limit, name } = req.query;
 
-    console.log("unitt", uni.count);
-    console.log("req.queryy", req.query); //name
     const filter = {};
 
     page = page !== undefined && page !== "" ? parseInt(page) : 1;
@@ -40,7 +38,6 @@ exports.list = async (req, res, next) => {
     if (page > Math.ceil(total / limit) && total > 0)
       page = Math.ceil(total / limit);
 
-    console.log("filter", filter);
     const faqs = await Branch.findAll({
       order: [["updatedAt", "DESC"]],
       offset: limit * (page - 1),
