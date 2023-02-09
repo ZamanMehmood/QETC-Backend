@@ -8,7 +8,7 @@ router.route("/create").post( controller.create);
 router.route("/list").get(controller.list);
 router.route("/restore/:fileName").put(uploadSingle, controller.restore);
 router.route("/delete/:fileName").delete(controller.delete);
-router.route("/download").delete(controller.download);
+router.route("/download/:fileName").get(controller.download);
 
  
   
