@@ -4,10 +4,9 @@ const controller = require("../../../controllers/front/backup.controller");
 const router = express.Router();
 const { uploadSingle, cpUpload } = require("../../../utils/upload");
 
-router.route("/create").post( controller.create);
+router.route("/create").post(uploadSingle, controller.create);
 router.route("/list").get(controller.list);
 router.route("/restore/:fileName").put(uploadSingle, controller.restore);
 router.route("/delete/:fileName").delete(controller.delete);
-
 
 module.exports = router;

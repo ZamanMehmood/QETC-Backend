@@ -10,7 +10,7 @@ const config = require(__dirname + "../../../../../config/config.json")[env];
 
 const fs = require("fs");
 const path = require("path");
-const child_process = require('child_process');
+const child_process = require("child_process");
 
 const getFileName = async () => {
   const date = new Date();
@@ -95,7 +95,6 @@ exports.list = async (req, res, next) => {
   // console.log("req.query",req.query);
   try {
     const backups = await getBackupFiles();
-
     return res.send({
       success: true,
       backups,
@@ -110,22 +109,25 @@ exports.restore = async (req, res, next) => {
   const restoreCommand = `mysql -u ${config.username} -p ${config.password} ${config.database} < ./backups/${req.params.fileName}.sql`;
   child_process.exec(restoreCommand, (err, stdout, stderr) => {
     if (err) {
-      console.log(err)
-      return res.status(500).json({ error: 'Failed to restore database',success:true });
+      console.log(err);
+      return res
+        .status(500)
+        .json({ error: "Failed to restore database", success: true });
     }
-    return res.status(200).json({ message: 'Database restored successfully',success:false });
+    return res
+      .status(200)
+      .json({ message: "Database restored successfully", success: false });
   });
-}
-
+};
 
 exports.delete = async (req, res, next) => {
   try {
     const filePath = `./backups/${req.params.fileName}.sql`;
     fs.unlink(filePath, (err) => {
       if (err) {
-        return res.status(500).json({ error: 'Failed to delete file' });
+        return res.status(500).json({ error: "Failed to delete file" });
       }
-      return res.status(200).json({ message: 'File deleted successfully' });
+      return res.status(200).json({ message: "File deleted successfully" });
     });
   } catch (error) {
     return next(error);

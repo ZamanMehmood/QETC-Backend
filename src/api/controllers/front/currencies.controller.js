@@ -4,8 +4,10 @@ const Currency = db.Currency;
 // create Currency
 exports.create = async (req, res, next) => {
   try {
-    let payload=req.body
-     //save the currency in db
+    let payload = req.body;
+
+    console.log("payload of create currency", payload);
+    //save the currency in db
     let currency = await Currency.create(payload);
     return res.json({
       success: true,
@@ -51,7 +53,7 @@ exports.list = async (req, res, next) => {
     // res.send(uni);
     return res.send({
       success: true,
-      message: "Programms fetched successfully",
+      message: "currency fetched successfully",
       data: {
         faqs,
         pagination: {
@@ -72,6 +74,8 @@ exports.list = async (req, res, next) => {
 exports.edit = async (req, res, next) => {
   try {
     let payload = req.body;
+    console.log("edit payload =>", payload);
+
     const currency = await Currency.update(
       // Values to update
       payload,
@@ -83,6 +87,7 @@ exports.edit = async (req, res, next) => {
       }
     );
 
+    console.log("edit cur currrr =>", currency);
     return res.send({
       success: true,
       message: "currency updated successfully",
