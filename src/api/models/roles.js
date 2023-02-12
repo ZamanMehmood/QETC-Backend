@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Roles.hasMany(models.Users)
     }
   }
 
@@ -21,46 +22,46 @@ module.exports = (sequelize, DataTypes) => {
       unique: true
     },
 
-    addUni: { type: DataTypes.Boolean, defaultValue: false },
-    editUni: { type: DataTypes.Boolean, defaultValue: false },
-    deleteUni: { type: DataTypes.Boolean, defaultValue: false },
-    viewUni: { type: DataTypes.Boolean, defaultValue: false },
+    addUni: { type: DataTypes.BOOLEAN, defaultValue: false },
+    editUni: { type: DataTypes.BOOLEAN, defaultValue: false },
+    deleteUni: { type: DataTypes.BOOLEAN, defaultValue: false },
+    viewUni: { type: DataTypes.BOOLEAN, defaultValue: false },
 
-    addUProgram: { type: DataTypes.Boolean, defaultValue: false },
-    editUProgram: { type: DataTypes.Boolean, defaultValue: false },
-    deleteUProgram: { type: DataTypes.Boolean, defaultValue: false },
-    viewUProgram: { type: DataTypes.Boolean, defaultValue: false },
+    addUProgram: { type: DataTypes.BOOLEAN, defaultValue: false },
+    editUProgram: { type: DataTypes.BOOLEAN, defaultValue: false },
+    deleteUProgram: { type: DataTypes.BOOLEAN, defaultValue: false },
+    viewUProgram: { type: DataTypes.BOOLEAN, defaultValue: false },
 
-    addLeads: { type: DataTypes.Boolean, defaultValue: false },
-    editLeads: { type: DataTypes.Boolean, defaultValue: false },
-    deleteLeads: { type: DataTypes.Boolean, defaultValue: false },
-    viewLeads: { type: DataTypes.Boolean, defaultValue: false },
+    addLeads: { type: DataTypes.BOOLEAN, defaultValue: false },
+    editLeads: { type: DataTypes.BOOLEAN, defaultValue: false },
+    deleteLeads: { type: DataTypes.BOOLEAN, defaultValue: false },
+    viewLeads: { type: DataTypes.BOOLEAN, defaultValue: false },
 
-    addApplication: { type: DataTypes.Boolean, defaultValue: false },
-    editApplication: { type: DataTypes.Boolean, defaultValue: false },
-    deleteApplication: { type: DataTypes.Boolean, defaultValue: false },
-    viewApplication: { type: DataTypes.Boolean, defaultValue: false },
+    addApplication: { type: DataTypes.BOOLEAN, defaultValue: false },
+    editApplication: { type: DataTypes.BOOLEAN, defaultValue: false },
+    deleteApplication: { type: DataTypes.BOOLEAN, defaultValue: false },
+    viewApplication: { type: DataTypes.BOOLEAN, defaultValue: false },
 
-    addApplicationStatus: { type: DataTypes.Boolean, defaultValue: false },
-    editApplicationStatus: { type: DataTypes.Boolean, defaultValue: false },
-    deleteApplicationStatus: { type: DataTypes.Boolean, defaultValue: false },
-    viewApplicationStatus: { type: DataTypes.Boolean, defaultValue: false },
+    addApplicationStatus: { type: DataTypes.BOOLEAN, defaultValue: false },
+    editApplicationStatus: { type: DataTypes.BOOLEAN, defaultValue: false },
+    deleteApplicationStatus: { type: DataTypes.BOOLEAN, defaultValue: false },
+    viewApplicationStatus: { type: DataTypes.BOOLEAN, defaultValue: false },
 
-    addInvCommission: { type: DataTypes.Boolean, defaultValue: false },
-    editInvCommission: { type: DataTypes.Boolean, defaultValue: false },
-    deleteInvCommission: { type: DataTypes.Boolean, defaultValue: false },
-    viewInvCommission: { type: DataTypes.Boolean, defaultValue: false },
+    addInvCommission: { type: DataTypes.BOOLEAN, defaultValue: false },
+    editInvCommission: { type: DataTypes.BOOLEAN, defaultValue: false },
+    deleteInvCommission: { type: DataTypes.BOOLEAN, defaultValue: false },
+    viewInvCommission: { type: DataTypes.BOOLEAN, defaultValue: false },
 
 
-    addInvGeneral: { type: DataTypes.Boolean, defaultValue: false },
-    editInvGeneral: { type: DataTypes.Boolean, defaultValue: false },
-    deleteInvGeneral: { type: DataTypes.Boolean, defaultValue: false },
-    viewInvGeneral: { type: DataTypes.Boolean, defaultValue: false },
+    addInvGeneral: { type: DataTypes.BOOLEAN, defaultValue: false },
+    editInvGeneral: { type: DataTypes.BOOLEAN, defaultValue: false },
+    deleteInvGeneral: { type: DataTypes.BOOLEAN, defaultValue: false },
+    viewInvGeneral: { type: DataTypes.BOOLEAN, defaultValue: false },
 
-    addAccounting: { type: DataTypes.Boolean, defaultValue: false },
-    editAccounting: { type: DataTypes.Boolean, defaultValue: false },
-    deleteAccounting: { type: DataTypes.Boolean, defaultValue: false },
-    viewAccounting: { type: DataTypes.Boolean, defaultValue: false },
+    addAccounting: { type: DataTypes.BOOLEAN, defaultValue: false },
+    editAccounting: { type: DataTypes.BOOLEAN, defaultValue: false },
+    deleteAccounting: { type: DataTypes.BOOLEAN, defaultValue: false },
+    viewAccounting: { type: DataTypes.BOOLEAN, defaultValue: false },
 
     // title: DataTypes.STRING
   }, {
