@@ -1,6 +1,6 @@
 const db = require("../../models");
 const Programme = db.Programme;
-
+const Activity = db.Activity;
 // create programms
 exports.createProgramme = async (req, res, next) => {
   try {
@@ -22,9 +22,12 @@ exports.createProgramme = async (req, res, next) => {
 
     //save the programme in db
     programme = await Programme.create(programme);
+    await Activity.create({ action: "New programme Created", userId: 1 });
+
     return res.json({
       success: true,
       data: programme,
+      // Activity,
       message: "programme created successfully",
     });
   } catch (err) {
@@ -103,6 +106,7 @@ exports.edit = async (req, res, next) => {
         },
       }
     );
+    await Activity.create({ action: "New programme updated", userId: 1 });
 
     return res.send({
       success: true,
@@ -120,6 +124,7 @@ exports.delete = async (req, res, next) => {
     const { id } = req.params;
     if (id) {
       const programme = await Programme.destroy({ where: { id: id } });
+      await Activity.create({ action: " programme deleted", userId: 1 });
 
       if (programme)
         return res.send({

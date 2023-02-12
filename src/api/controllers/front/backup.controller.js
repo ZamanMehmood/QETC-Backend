@@ -45,6 +45,16 @@ const getBackupFiles = async () => {
   return await Promise.all(backups);
 };
 
+exports.download = async (req, res, next) => {
+  try {
+    const file = path.join(__dirname, `../backup/${req.params.fileName}`);
+    res.sendFile(file);
+  } catch (err) {
+    console.log("Error handling =>", err);
+    next();
+  }
+};
+
 // create university
 exports.create = async (req, res, next) => {
   console.log("Creaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaate");
@@ -80,6 +90,7 @@ exports.create = async (req, res, next) => {
     });
 
     // console.log("options",result)
+    // await Activity.create({ action: "Backup created", userId: 1 });
 
     return res.send({
       success: true,

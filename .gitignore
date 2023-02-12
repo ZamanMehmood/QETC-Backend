@@ -4,7 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
-/uploads
+src/uploads
 
 # testing
 /coverage
@@ -12,7 +12,8 @@
 # production
 /build
 /backups
-
+/uploads/images
+/uploads
 # misc
 .DS_Store
 .env.local

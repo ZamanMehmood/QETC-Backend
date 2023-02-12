@@ -1,5 +1,5 @@
 const db = require("../../models");
-const Users = db.Users;
+const Branch = db.Branch;
 const Activity = db.Activity;
 
 // create Branch
@@ -7,25 +7,26 @@ exports.create = async (req, res, next) => {
   try {
     let payload = req.body;
     //save the branch in db
-    let user = await Users.create(payload);
-
-    await Activity.create({ action: "User created", userId: 1 });
+    let branch = await Branch.create(payload);
+    await Activity.create({ action: "Branch created", userId: 1 });
 
     return res.json({
       success: true,
-      data: user,
-      message: "user created successfully",
+      data: branch,
+      message: "branch created successfully",
     });
   } catch (err) {
     next();
   }
 };
 
-// list users
+// list Branchies
 exports.list = async (req, res, next) => {
   try {
-    const user = await Users.findAndCountAll();
+    const uni = await Branch.findAndCountAll();
+
     let { page, limit, name } = req.query;
+
     const filter = {};
 
     page = page !== undefined && page !== "" ? parseInt(page) : 1;
@@ -35,22 +36,22 @@ exports.list = async (req, res, next) => {
       filter.name = { $LIKE: name, $options: "gi" };
     }
 
-    const total = user.count;
+    const total = uni.count;
 
     if (page > Math.ceil(total / limit) && total > 0)
       page = Math.ceil(total / limit);
 
-    const faqs = await Users.findAll({
+    const faqs = await Branch.findAll({
       order: [["updatedAt", "DESC"]],
       offset: limit * (page - 1),
       limit: limit,
       where: filter,
     });
     console.log("faqs", faqs);
-    // res.send(user);
+    // res.send(uni);
     return res.send({
       success: true,
-      message: "users fetched successfully",
+      message: "Programms fetched successfully",
       data: {
         faqs,
         pagination: {
@@ -62,7 +63,7 @@ exports.list = async (req, res, next) => {
       },
     });
   } catch (err) {
-    res.send("User  Error " + err);
+    res.send("branch Error " + err);
   }
   // next();
 };
@@ -71,7 +72,7 @@ exports.list = async (req, res, next) => {
 exports.edit = async (req, res, next) => {
   try {
     let payload = req.body;
-    const user = await Users.update(
+    const branch = await Branch.update(
       // Values to update
       payload,
       {
@@ -81,12 +82,12 @@ exports.edit = async (req, res, next) => {
         },
       }
     );
-    await Activity.create({ action: "User updated", userId: 1 });
+    await Activity.create({ action: "Branch updated", userId: 1 });
 
     return res.send({
       success: true,
-      message: "user updated successfully",
-      user,
+      message: "branch updated successfully",
+      branch,
     });
   } catch (error) {
     return next(error);
@@ -98,24 +99,24 @@ exports.delete = async (req, res, next) => {
   try {
     const { id } = req.params;
     if (id) {
-      const user = await Users.destroy({ where: { id: id } });
-      await Activity.create({ action: "User deleted", userId: 1 });
+      const branch = await Branch.destroy({ where: { id: id } });
+      await Activity.create({ action: "Branch deleted", userId: 1 });
 
-      if (user)
+      if (branch)
         return res.send({
           success: true,
-          message: "user Page deleted successfully",
+          message: "branch Page deleted successfully",
           id,
         });
       else
         return res.status(400).send({
           success: false,
-          message: "user Page not found for given Id",
+          message: "branch Page not found for given Id",
         });
     } else
       return res
         .status(400)
-        .send({ success: false, message: "user Id is required" });
+        .send({ success: false, message: "branch Id is required" });
   } catch (error) {
     return next(error);
   }
@@ -126,23 +127,23 @@ exports.get = async (req, res, next) => {
   try {
     const { id } = req.params;
     if (id) {
-      const user = await Users.findByPk(id);
+      const branch = await Branch.findByPk(id);
 
-      if (user)
+      if (branch)
         return res.json({
           success: true,
-          message: "user retrieved successfully",
-          user,
+          message: "branch retrieved successfully",
+          branch,
         });
       else
         return res.status(400).send({
           success: false,
-          message: "user not found for given Id",
+          message: "branch not found for given Id",
         });
     } else
       return res
         .status(400)
-        .send({ success: false, message: "user Id is required" });
+        .send({ success: false, message: "branch Id is required" });
   } catch (error) {
     return next(error);
   }

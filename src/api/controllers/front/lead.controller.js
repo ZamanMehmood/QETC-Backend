@@ -1,6 +1,7 @@
 const db = require("../../models");
 const Lead = db.Lead;
 const ProgrammeDetails = db.ProgrameDetails;
+const Activity = db.Activity;
 
 // create lead
 exports.createLead = async (req, res, next) => {
@@ -38,6 +39,8 @@ exports.createLead = async (req, res, next) => {
       //  UniversityId: university.dataValues.id
     };
     programmeDetails = await ProgrammeDetails.create(programmeDetails);
+
+    await Activity.create({ action: "new lead created", userId: 1 });
 
     return res.json({
       success: true,
@@ -196,6 +199,8 @@ exports.edit = async (req, res, next) => {
       },
     });
 
+    await Activity.create({ action: "new lead updated", userId: 1 });
+
     return res.send({
       success: true,
       message: "lead updated successfully",
@@ -216,6 +221,8 @@ exports.delete = async (req, res, next) => {
         where: { leadId: id },
       });
       const lead = await Lead.destroy({ where: { id: id } });
+
+      await Activity.create({ action: "new lead deleted", userId: 1 });
 
       if (lead)
         return res.send({

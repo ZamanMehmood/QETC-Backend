@@ -1,5 +1,6 @@
 const db = require("../../models");
 const Currency = db.Currency;
+const Activity = db.Activity;
 
 // create Currency
 exports.create = async (req, res, next) => {
@@ -9,6 +10,9 @@ exports.create = async (req, res, next) => {
     console.log("payload of create currency", payload);
     //save the currency in db
     let currency = await Currency.create(payload);
+
+    await Activity.create({ action: "New Currency created", userId: 1 });
+
     return res.json({
       success: true,
       data: currency,
@@ -88,6 +92,8 @@ exports.edit = async (req, res, next) => {
     );
 
     console.log("edit cur currrr =>", currency);
+    await Activity.create({ action: "New Currency updated", userId: 1 });
+
     return res.send({
       success: true,
       message: "currency updated successfully",
@@ -104,6 +110,7 @@ exports.delete = async (req, res, next) => {
     const { id } = req.params;
     if (id) {
       const currency = await Currency.destroy({ where: { id: id } });
+      await Activity.create({ action: "New Currency deleted", userId: 1 });
 
       if (currency)
         return res.send({

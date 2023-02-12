@@ -1,6 +1,6 @@
 const db = require("../../models");
 const Activity = db.Activity;
-
+// Activity
 // list Activityies
 exports.list = async (req, res, next) => {
   try {
@@ -8,8 +8,8 @@ exports.list = async (req, res, next) => {
 
     let { page, limit, name } = req.query;
 
-    console.log("unitt", uni.count);
-    console.log("req.queryy", req.query); //name
+    // console.log("unitt", uni.count);
+    // console.log("req.queryy", req.query); //name
     const filter = {};
 
     page = page !== undefined && page !== "" ? parseInt(page) : 1;
@@ -51,5 +51,3 @@ exports.list = async (req, res, next) => {
   }
   // next();
 };
-
- 

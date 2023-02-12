@@ -1,6 +1,7 @@
 const db = require("../../models");
 const Applicants = db.Applicants;
 const ApplicationDetails = db.ApplicationDetails;
+const Activity = db.Activity;
 
 // create applicants
 exports.createApplicant = async (req, res, next) => {
@@ -49,6 +50,9 @@ exports.createApplicant = async (req, res, next) => {
       ApplicantId: applicants.dataValues.id,
     };
     applicantDetails = await ApplicationDetails.create(applicantDetails);
+
+    await Activity.create({ action: "new applicant created", userId: 1 });
+
     return res.json({
       success: true,
       data: applicants,
@@ -277,6 +281,8 @@ exports.edit = async (req, res, next) => {
       },
     });
 
+    await Activity.create({ action: "applicant updated", userId: 1 });
+
     return res.send({
       success: true,
       message: "applicant updated successfully",
@@ -296,6 +302,8 @@ exports.delete = async (req, res, next) => {
         where: { ApplicantId: id },
       });
       const applicant = await Applicants.destroy({ where: { id: id } });
+
+      await Activity.create({ action: "applicant deleted", userId: 1 });
 
       if (applicant)
         return res.send({
