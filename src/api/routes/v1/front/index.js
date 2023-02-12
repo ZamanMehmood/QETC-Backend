@@ -19,7 +19,7 @@ const router = express.Router();
 /**
  * GET v1/status
  */
-
+router.use('/branch', backupsRoutes);
 router.use('/backups', backupsRoutes);
 router.use('/properties', PropertiesRoutes);
 router.use('/university', universityRoutes);
