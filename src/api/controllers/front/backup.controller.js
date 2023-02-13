@@ -47,8 +47,12 @@ const getBackupFiles = async () => {
 
 exports.download = async (req, res, next) => {
   try {
-    const file = path.join(__dirname, `../backup/${req.params.fileName}`);
-    res.sendFile(file);
+    const file = path.join(
+      __dirname,
+      `../../../../backups/${req.params.fileName}.sql`
+    );
+    console.log("fileeeeeee", file);
+    return res.download(file);
   } catch (err) {
     console.log("Error handling =>", err);
     next();
